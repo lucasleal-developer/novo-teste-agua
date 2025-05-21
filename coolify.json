@@ -1,0 +1,13 @@
+{
+  "version": "1.0.0",
+  "name": "agua-de-coco-landing",
+  "type": "static",
+  "buildCommand": "npm run build",
+  "publishDirectory": "dist",
+  "buildPack": "node",
+  "nodeVersion": "20",
+  "env": {
+    "HOST": "0.0.0.0",
+    "PORT": "4321"
+  }
+}
