@@ -18,19 +18,25 @@ COPY public/ ./public/
 RUN npm run build
 
 # Estágio de produção
-FROM node:20-alpine AS runtime
+FROM nginx:alpine AS runtime
 
-WORKDIR /app
+WORKDIR /usr/share/nginx/html
 
-# Copiar arquivos de configuração e dependências
-COPY --from=build /app/package*.json ./
-COPY --from=build /app/dist/ ./dist/
+# Copiar os arquivos estáticos gerados
+COPY --from=build /app/dist/ ./
 
-# Instalar apenas dependências de produção
-RUN npm ci --omit=dev
+# Configuração do Nginx para SPA
+RUN echo 'server { \
+    listen 80; \
+    location / { \
+        root /usr/share/nginx/html; \
+        index index.html index.htm; \
+        try_files $uri $uri/ /index.html; \
+    } \
+}' > /etc/nginx/conf.d/default.conf
 
 # Expor a porta
-EXPOSE 4321
+EXPOSE 80
 
 # Comando para iniciar o servidor
-CMD ["node", "./dist/server/entry.mjs"]
+CMD ["nginx", "-g", "daemon off;"]
